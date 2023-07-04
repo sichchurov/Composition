@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import com.shchurovsi.composition.R
 import com.shchurovsi.composition.databinding.FragmentWelcomeBinding
 
 
@@ -22,14 +24,24 @@ class WelcomeFragment : Fragment() {
         return binding.root
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.buttonUnderstand.setOnClickListener {
+            launchChooseLevel()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
         _binding = null
     }
 
-    companion object {
-
-        @JvmStatic
-        fun newInstance() = WelcomeFragment()
+    private fun launchChooseLevel() {
+        requireActivity().supportFragmentManager.commit {
+            addToBackStack(null)
+            replace(R.id.main_container, ChooseLevelFragment.newInstance())
+        }
     }
 }
