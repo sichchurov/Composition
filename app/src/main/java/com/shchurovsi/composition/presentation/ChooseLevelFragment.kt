@@ -3,58 +3,68 @@ package com.shchurovsi.composition.presentation
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnClickListener
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import com.shchurovsi.composition.R
+import com.shchurovsi.composition.databinding.FragmentChooseLevelBinding
+import com.shchurovsi.composition.domain.entity.Level
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ChooseLevelFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class ChooseLevelFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+class ChooseLevelFragment : Fragment(), OnClickListener {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private var _binding: FragmentChooseLevelBinding? = null
+    private val binding: FragmentChooseLevelBinding
+        get() = _binding ?: throw RuntimeException("FragmentChooseLevelBinding is null")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_choose_level, container, false)
+    ): View {
+        _binding = FragmentChooseLevelBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        launchGameFragment()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun launchGameFragment() = with(binding) {
+        buttonLevelEasy.setOnClickListener(this@ChooseLevelFragment)
+        buttonLevelNormal.setOnClickListener(this@ChooseLevelFragment)
+        buttonLevelHard.setOnClickListener(this@ChooseLevelFragment)
+        buttonLevelTest.setOnClickListener(this@ChooseLevelFragment)
+    }
+
+    override fun onClick(view: View?) {
+        val fragment = when (view?.id) {
+            R.id.button_level_easy -> GameFragment.newInstance(Level.EASY)
+            R.id.button_level_test -> GameFragment.newInstance(Level.TEST)
+            R.id.button_level_normal -> GameFragment.newInstance(Level.NORMAL)
+            R.id.button_level_hard -> GameFragment.newInstance(Level.HARD)
+            else -> throw RuntimeException("Fragment is undefined")
+        }
+
+        requireActivity().supportFragmentManager.commit {
+            addToBackStack(GameFragment.NAME)
+            replace(R.id.main_container, fragment)
+        }
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ChooseLevelFragment.
-         */
-        // TODO: Rename and change types and number of parameters
+
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ChooseLevelFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        fun newInstance() = ChooseLevelFragment()
     }
+
+
+
 }
