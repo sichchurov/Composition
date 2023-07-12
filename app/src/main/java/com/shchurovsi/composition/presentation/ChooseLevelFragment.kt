@@ -54,6 +54,7 @@ class ChooseLevelFragment : Fragment(), OnClickListener {
         }
 
         requireActivity().supportFragmentManager.commit {
+            setReorderingAllowed(true)
             addToBackStack(GameFragment.NAME)
             replace(R.id.main_container, fragment)
         }
