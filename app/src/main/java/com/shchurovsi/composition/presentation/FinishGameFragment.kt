@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.shchurovsi.composition.R
 import com.shchurovsi.composition.databinding.FragmentFinishGameBinding
 import com.shchurovsi.composition.domain.entity.GameResult
 
@@ -15,6 +16,7 @@ class FinishGameFragment : Fragment() {
     private lateinit var result: GameResult
 
     private var _binding: FragmentFinishGameBinding? = null
+
     private val binding: FragmentFinishGameBinding
         get() = _binding ?: throw RuntimeException("FragmentFinishGameBinding is null")
 
@@ -33,6 +35,7 @@ class FinishGameFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object :
             OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -40,12 +43,59 @@ class FinishGameFragment : Fragment() {
             }
 
         })
+
+        binding.buttonRetry.setOnClickListener { retryGame() }
+
+        setResultEmoji()
+
+        setResultText()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-
         _binding = null
+    }
+
+    private fun setResultEmoji() {
+        binding.apply {
+            if (result.winner) {
+                emojiResult.setImageResource(R.drawable.ic_smile)
+            } else {
+                emojiResult.setImageResource(R.drawable.ic_sad)
+            }
+        }
+    }
+
+    private fun setResultText() {
+        binding.apply {
+            tvRequiredAnswers.text = requireActivity().getString(
+                R.string.required_score,
+                result.gameSettings.minCountOfRightAnswers.toString()
+            )
+
+            tvScoreAnswers.text = requireActivity().getString(
+                R.string.score_answers,
+                result.countOfRightAnswers.toString()
+            )
+
+            tvRequiredPercentage.text = requireActivity().getString(
+                R.string.required_percentage,
+                result.gameSettings.minPercentOfRightAnswers.toString()
+            )
+
+            tvScorePercentage.text = requireActivity().getString(
+                R.string.score_percentage,
+                getPercentOfRightAnswers().toString()
+            )
+        }
+    }
+
+    private fun getPercentOfRightAnswers() = with(result) {
+        if (countOfRightAnswers == 0) {
+            0
+        } else {
+            ((countOfRightAnswers / countOfQuestions.toDouble()) * 100).toInt()
+        }
     }
 
     private fun parseParams() {
