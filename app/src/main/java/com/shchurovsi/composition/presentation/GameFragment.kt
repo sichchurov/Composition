@@ -8,23 +8,19 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
-import com.shchurovsi.composition.R
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.shchurovsi.composition.databinding.FragmentGameBinding
-import com.shchurovsi.composition.domain.entity.GameResult
-import com.shchurovsi.composition.domain.entity.Level
 
 class GameFragment : Fragment() {
 
     private var _binding: FragmentGameBinding? = null
 
-    private lateinit var level: Level
-
-    private lateinit var result: GameResult
+    private val args by navArgs<GameFragmentArgs>()
 
     private val viewModelFactory by lazy {
-        GameViewModelFactory(requireActivity().application, level)
+        GameViewModelFactory(requireActivity().application, args.level)
     }
 
     private val viewModel by lazy {
@@ -45,13 +41,9 @@ class GameFragment : Fragment() {
     private val binding: FragmentGameBinding
         get() = _binding ?: throw RuntimeException("FragmentGameBinding is null")
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        parseParams()
-    }
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentGameBinding.inflate(inflater, container, false)
@@ -65,9 +57,9 @@ class GameFragment : Fragment() {
 
         showProgress()
 
-        solveQuestion()
-
         showQuestion()
+
+        solveQuestion()
 
         showProgressbar()
 
@@ -78,7 +70,6 @@ class GameFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        viewModel.resetSettings()
     }
 
     private fun showTimer() {
@@ -114,12 +105,6 @@ class GameFragment : Fragment() {
             v.setOnClickListener {
                 viewModel.chooseAnswer(v.text.toString().toInt())
             }
-        }
-    }
-
-    private fun parseParams() {
-        requireArguments().getParcelable<Level>(KEY_LEVEL)?.let {
-            level = it
         }
     }
 
@@ -161,42 +146,14 @@ class GameFragment : Fragment() {
             android.R.color.holo_red_light
         }
 
-        return ContextCompat.getColor(requireContext(),color)
+        return ContextCompat.getColor(requireContext(), color)
     }
 
     private fun finishGame() {
-        viewModel.apply {
-
-            gameResult.observe(viewLifecycleOwner) {
-                result = it
-            }
-
-
-            shouldGameFinished.observe(viewLifecycleOwner) {
-                if (it) {
-                    requireActivity().supportFragmentManager.commit {
-                        setReorderingAllowed(true)
-                        addToBackStack(null)
-                        replace(R.id.main_container, FinishGameFragment.newInstance(result))
-                    }
-                }
-            }
-
-
-        }
-    }
-
-    companion object {
-        private const val KEY_LEVEL = "level"
-        const val NAME = "GameFragment"
-
-        @JvmStatic
-        fun newInstance(level: Level): GameFragment {
-            return GameFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(KEY_LEVEL, level)
-                }
-            }
+        viewModel.gameResult.observe(viewLifecycleOwner) {
+            findNavController().navigate(
+                GameFragmentDirections.actionGameFragmentToFinishGameFragment(it)
+            )
         }
     }
 }

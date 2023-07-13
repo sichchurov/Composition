@@ -3,16 +3,14 @@ package com.shchurovsi.composition.presentation
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnClickListener
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
-import com.shchurovsi.composition.R
+import androidx.navigation.fragment.findNavController
 import com.shchurovsi.composition.databinding.FragmentChooseLevelBinding
 import com.shchurovsi.composition.domain.entity.Level
 
 
-class ChooseLevelFragment : Fragment(), OnClickListener {
+class ChooseLevelFragment : Fragment() {
 
     private var _binding: FragmentChooseLevelBinding? = null
     private val binding: FragmentChooseLevelBinding
@@ -28,8 +26,7 @@ class ChooseLevelFragment : Fragment(), OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        launchGameFragment()
+        launchGame()
     }
 
     override fun onDestroyView() {
@@ -37,35 +34,28 @@ class ChooseLevelFragment : Fragment(), OnClickListener {
         _binding = null
     }
 
-    private fun launchGameFragment() = with(binding) {
-        buttonLevelEasy.setOnClickListener(this@ChooseLevelFragment)
-        buttonLevelNormal.setOnClickListener(this@ChooseLevelFragment)
-        buttonLevelHard.setOnClickListener(this@ChooseLevelFragment)
-        buttonLevelTest.setOnClickListener(this@ChooseLevelFragment)
-    }
+    private fun launchGame() {
+        binding.apply {
+            buttonLevelEasy.setOnClickListener {
+                launchGameFragment(Level.EASY)
+            }
 
-    override fun onClick(view: View?) {
-        val fragment = when (view?.id) {
-            R.id.button_level_easy -> GameFragment.newInstance(Level.EASY)
-            R.id.button_level_test -> GameFragment.newInstance(Level.TEST)
-            R.id.button_level_normal -> GameFragment.newInstance(Level.NORMAL)
-            R.id.button_level_hard -> GameFragment.newInstance(Level.HARD)
-            else -> throw RuntimeException("Fragment is undefined")
-        }
+            buttonLevelNormal.setOnClickListener {
+                launchGameFragment(Level.NORMAL)
+            }
 
-        requireActivity().supportFragmentManager.commit {
-            setReorderingAllowed(true)
-            addToBackStack(GameFragment.NAME)
-            replace(R.id.main_container, fragment)
+            buttonLevelHard.setOnClickListener {
+                launchGameFragment(Level.HARD)
+            }
+            buttonLevelTest.setOnClickListener {
+                launchGameFragment(Level.TEST)
+            }
         }
     }
 
-    companion object {
-
-        @JvmStatic
-        fun newInstance() = ChooseLevelFragment()
+    private fun launchGameFragment(level: Level) {
+        findNavController().navigate(
+            ChooseLevelFragmentDirections.actionChooseLevelFragmentToGameFragment(level)
+        )
     }
-
-
-
 }

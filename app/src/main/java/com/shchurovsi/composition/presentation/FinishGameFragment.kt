@@ -6,24 +6,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.shchurovsi.composition.R
 import com.shchurovsi.composition.databinding.FragmentFinishGameBinding
 import com.shchurovsi.composition.domain.entity.GameResult
 
 class FinishGameFragment : Fragment() {
 
-    private lateinit var result: GameResult
+    private val args by navArgs<FinishGameFragmentArgs>()
+
+    private val result: GameResult by lazy {
+        args.gameResult
+    }
 
     private var _binding: FragmentFinishGameBinding? = null
-
     private val binding: FragmentFinishGameBinding
         get() = _binding ?: throw RuntimeException("FragmentFinishGameBinding is null")
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        parseParams()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -98,29 +97,7 @@ class FinishGameFragment : Fragment() {
         }
     }
 
-    private fun parseParams() {
-        requireArguments().getParcelable<GameResult>(GAME_STAT)?.let {
-            result = it
-        }
-    }
-
     private fun retryGame() {
-        requireActivity().supportFragmentManager.popBackStack(
-            GameFragment.NAME,
-            FragmentManager.POP_BACK_STACK_INCLUSIVE
-        )
-    }
-
-    companion object {
-        private const val GAME_STAT = "stat"
-
-        @JvmStatic
-        fun newInstance(result: GameResult): FinishGameFragment {
-            return FinishGameFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(GAME_STAT, result)
-                }
-            }
-        }
+        findNavController().popBackStack()
     }
 }
