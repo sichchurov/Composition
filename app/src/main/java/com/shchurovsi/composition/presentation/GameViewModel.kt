@@ -41,11 +41,6 @@ class GameViewModel(
     val question: LiveData<Question>
         get() = _question
 
-    // tag for action when timer off
-    private val _shouldGameFinished = MutableLiveData<Boolean>()
-    val shouldGameFinished: LiveData<Boolean>
-        get() = _shouldGameFinished
-
     // progress string
     private val _percentOfRightAnswers = MutableLiveData(0)
     val percentOfRightAnswers: LiveData<Int>
@@ -159,16 +154,6 @@ class GameViewModel(
             answersCounter,
             gameSettings
         )
-
-        _shouldGameFinished.value = true
-    }
-
-    fun resetSettings() {
-        // reset count of right answers
-        rightAnswersCounter = 0
-        answersCounter = 0
-        _percentOfRightAnswers.value = 0
-        _shouldGameFinished.value = false
     }
 
     companion object {
