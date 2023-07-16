@@ -139,7 +139,6 @@ class GameViewModel(
         answersCounter++
     }
 
-    // format time to 00:59
     private fun formatTime(millisUntilFinished: Long): String {
         val seconds = millisUntilFinished / MILLIS_IN_SECOND
         val minutes = seconds / SECONDS_IN_MINUTES

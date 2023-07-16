@@ -6,9 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.shchurovsi.composition.R
 import com.shchurovsi.composition.databinding.FragmentWelcomeBinding
-
 
 class WelcomeFragment : Fragment() {
 
@@ -28,17 +26,14 @@ class WelcomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonUnderstand.setOnClickListener {
-            launchChooseLevel()
+            findNavController().navigate(
+                WelcomeFragmentDirections.actionWelcomeFragmentToChooseLevelFragment()
+            )
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-
         _binding = null
-    }
-
-    private fun launchChooseLevel() {
-        findNavController().navigate(R.id.action_welcomeFragment_to_chooseLevelFragment)
     }
 }
