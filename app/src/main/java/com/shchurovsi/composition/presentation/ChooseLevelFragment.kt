@@ -34,22 +34,17 @@ class ChooseLevelFragment : Fragment() {
         _binding = null
     }
 
-    private fun launchGame() {
-        binding.apply {
-            buttonLevelEasy.setOnClickListener {
-                launchGameFragment(Level.EASY)
-            }
+    private fun launchGame() = with(binding) {
+        buttonLevelEasy.setOnClickListener {
+            launchGameFragment(Level.EASY)
+        }
 
-            buttonLevelNormal.setOnClickListener {
-                launchGameFragment(Level.NORMAL)
-            }
+        buttonLevelNormal.setOnClickListener {
+            launchGameFragment(Level.NORMAL)
+        }
 
-            buttonLevelHard.setOnClickListener {
-                launchGameFragment(Level.HARD)
-            }
-            buttonLevelTest.setOnClickListener {
-                launchGameFragment(Level.TEST)
-            }
+        buttonLevelHard.setOnClickListener {
+            launchGameFragment(Level.HARD)
         }
     }
 
