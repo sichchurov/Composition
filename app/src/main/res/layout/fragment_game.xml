@@ -2,6 +2,7 @@
 <layout>
 
     <data>
+
         <variable
             name="game"
             type="com.shchurovsi.composition.presentation.GameViewModel" />
@@ -19,6 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
+            android:fontFamily="@font/noto_sans"
             android:text="@{game.formattedTime}"
             android:textColor="@color/purple_700"
             android:textSize="24sp"
@@ -157,7 +159,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
+            android:fontFamily="@font/noto_sans"
             android:text="@{game.progressAnswers}"
+            android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@id/progress_bar"
             app:layout_constraintTop_toBottomOf="@id/tv_left_number"
             app:progressEnoughRightAnswerCounter="@{game.enoughRightAnswerCounter}"
