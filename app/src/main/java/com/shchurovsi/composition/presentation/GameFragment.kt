@@ -44,10 +44,30 @@ class GameFragment : Fragment() {
             lifecycleOwner = viewLifecycleOwner
         }
 
+        observeStates()
+
         viewModel.gameResult.observe(viewLifecycleOwner) {
             findNavController().navigate(
                 GameFragmentDirections.actionGameFragmentToFinishGameFragment(it)
             )
+        }
+    }
+
+    private fun observeStates() = with(binding) {
+        viewModel.state.observe(viewLifecycleOwner) {
+            when(it) {
+                is FormatTime -> {
+                    tvTimer.text = it.time
+                }
+
+                is PercentOfRightAnswers -> {
+                    progressBar.progress = it.percent
+                }
+
+                is ProgressAnswers -> {
+                    tvAnswersProgress.text = it.answers
+                }
+            }
         }
     }
 

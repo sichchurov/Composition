@@ -20,35 +20,21 @@ class GameViewModel(
 ) : ViewModel() {
 
     private val repository = GameRepositoryImpl
-
-    private lateinit var gameSettings: GameSettings
-
-    private var timer: CountDownTimer? = null
-
     private val generateQuestionUseCase = GenerateQuestionUseCase(repository)
     private val getGameSettingsUseCase = GetGameSettingsUseCase(repository)
 
+    private lateinit var gameSettings: GameSettings
+    private var timer: CountDownTimer? = null
     private var rightAnswersCounter = 0
     private var answersCounter = 0
 
-    // timer
-    private val _formattedTime = MutableLiveData<String>()
-    val formattedTime: LiveData<String>
-        get() = _formattedTime
+    private val _state = MutableLiveData<State>()
+    val state: LiveData<State>
+        get() = _state
 
-    // questions initializing
     private val _question = MutableLiveData<Question>()
     val question: LiveData<Question>
         get() = _question
-
-    // progress string
-    private val _percentOfRightAnswers = MutableLiveData(0)
-    val percentOfRightAnswers: LiveData<Int>
-        get() = _percentOfRightAnswers
-
-    private val _progressAnswers = MutableLiveData<String>()
-    val progressAnswers: LiveData<String>
-        get() = _progressAnswers
 
     private val _enoughRightAnswerCounter = MutableLiveData<Boolean>()
     val enoughRightAnswerCounter: LiveData<Boolean>
@@ -89,7 +75,7 @@ class GameViewModel(
             MILLIS_IN_SECOND
         ) {
             override fun onTick(millisUntilFinished: Long) {
-                _formattedTime.value = formatTime(millisUntilFinished)
+                _state.value = FormatTime(formatTime(millisUntilFinished))
             }
 
             override fun onFinish() {
@@ -106,16 +92,18 @@ class GameViewModel(
         getProgress()
 
         val percent = calculateRightAnswers()
-        _percentOfRightAnswers.value = percent
+        _state.value = PercentOfRightAnswers(percent)
         _enoughRightAnswerCounter.value = rightAnswersCounter >= gameSettings.minCountOfRightAnswers
         _enoughRightAnswerPercent.value = percent >= gameSettings.minPercentOfRightAnswers
     }
 
     private fun getProgress() {
-        _progressAnswers.value = String.format(
-            application.resources.getString(R.string.progress_answers),
-            rightAnswersCounter,
-            gameSettings.minCountOfRightAnswers
+        _state.value = ProgressAnswers(
+            String.format(
+                application.resources.getString(R.string.progress_answers),
+                rightAnswersCounter,
+                gameSettings.minCountOfRightAnswers
+            )
         )
     }
 
